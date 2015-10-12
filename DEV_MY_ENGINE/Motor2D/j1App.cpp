@@ -72,12 +72,9 @@ bool j1App::Awake()
 	p2List_item<j1Module*>* item;
 	item = modules.start;
 
-	
-
-
 	while(item != NULL && ret == true)
 	{
-		// TODO 1: Every awake to receive a xml node with their section of the config file if exists
+		
 		ret = item->data->Awake(config.child(item->data->name.GetString()));
 		item = item->next;
 	}
@@ -309,12 +306,6 @@ bool j1App::SaveGameNow()const
 		saveData->append_child("GameData");
 
 	}
-
-
-
-
-
-
 
 	return true;
 
