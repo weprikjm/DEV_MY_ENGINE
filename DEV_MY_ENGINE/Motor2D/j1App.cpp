@@ -284,7 +284,7 @@ bool j1App::SaveGameNow()
 	char* buf;
 
 		int size = App->fs->Load("Partida.xml", &buf);
-
+		
 		if (size != 0)
 		{
 			pugi::xml_parse_result result = saveData.load_buffer(buf, size);
@@ -304,6 +304,7 @@ bool j1App::SaveGameNow()
 		}
 		else
 		{
+			save_game.create("Partida.xml");
 			saveData.append_child("GameData");
 
 			p2List_item<j1Module*>* item;
@@ -321,13 +322,13 @@ bool j1App::SaveGameNow()
 				saveData.save(stream);
 
 				// we are done, so write data to disk
-				fs->Save(saveData.GetString(), stream.str().c_str(), stream.str().length());
+				fs->Save(save_game.GetString(), stream.str().c_str(), stream.str().length());
 				LOG("... finished saving", save_game.GetString());
 			}
 			else
 				LOG("Save process halted from an error in module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
 
-			saveData.load_buffer();
+			
 
 		}
 
