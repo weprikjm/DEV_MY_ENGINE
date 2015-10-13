@@ -66,7 +66,7 @@ private:
 	bool LoadConfig();
 
 	bool LoadGameNow();
-	bool SaveGameNow() const;
+	bool SaveGameNow();
 	
 
 public:
@@ -74,9 +74,10 @@ public:
 	uint				frames;
 	float				dt;
 	pugi::xml_document	config_file;
-	pugi::xml_document*	saveData;
+	pugi::xml_document	saveData;
 	pugi::xml_node		config;
 	pugi::xml_node		app_config;
+	pugi::xml_node*		gameData;
 
 	// Modules
 	j1Window*			win;
@@ -98,6 +99,9 @@ private:
 
 	mutable bool		want_to_save;
 	bool				want_to_load;
+
+	p2SString			load_game;
+	mutable p2SString	save_game;
 	
 };
 

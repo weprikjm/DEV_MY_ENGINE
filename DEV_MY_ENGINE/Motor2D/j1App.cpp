@@ -1,5 +1,6 @@
 #include "p2Defs.h"
 #include "p2Log.h"
+#include <sstream> 
 
 #include "j1Window.h"
 #include "j1Input.h"
@@ -89,7 +90,7 @@ bool j1App::LoadConfig()
 	char* buf;
 	int size = App->fs->Load("config.xml", &buf);
 	pugi::xml_parse_result result = config_file.load_buffer(buf, size);
-	RELEASE(buf);
+//	RELEASE(buf);
 
 	if (result == NULL)
 	{
@@ -274,38 +275,61 @@ bool j1App::LoadGameNow()
 	
 	return true;
 }
-bool j1App::SaveGameNow()const
+bool j1App::SaveGameNow()
 {
 	want_to_save = false;
 
 	bool ret = true;
 
 	char* buf;
-	int size = App->fs->Load("Partida.xml", &buf);
 
-	if (size != 0)
-	{
-		pugi::xml_parse_result result = saveData->load_buffer(buf, size);
+		int size = App->fs->Load("Partida.xml", &buf);
 
-		RELEASE(buf);
-
-		if (result == NULL)
+		if (size != 0)
 		{
-			LOG("Could not load map xml file Partida.xml. pugi error: %s", result.description());
-			ret = false;
+			pugi::xml_parse_result result = saveData.load_buffer(buf, size);
+
+			RELEASE(buf);
+
+			if (result == NULL)
+			{
+				LOG("Could not load map xml file Partida.xml. pugi error: %s", result.description());
+				ret = false;
+			}
+			else
+			{
+				gameData = &saveData.child("GameData");
+			}
+
 		}
-		//else
-		//{
-		//gameData = &saveData;
-		//}
+		else
+		{
+			saveData.append_child("GameData");
 
-	}
-	else
-	{
+			p2List_item<j1Module*>* item;
+			item = modules.start;
 
-		saveData->append_child("GameData");
+			while (item != NULL && ret == true) 
+			{
+				ret = item->data->SaveData(saveData.append_child(item->data->name.GetString()));//We call SaveData in every module
+				item = item->next;
+			}
 
-	}
+			if (ret == true)
+			{
+				std::stringstream stream;
+				saveData.save(stream);
+
+				// we are done, so write data to disk
+				fs->Save(saveData.GetString(), stream.str().c_str(), stream.str().length());
+				LOG("... finished saving", save_game.GetString());
+			}
+			else
+				LOG("Save process halted from an error in module %s", (item != NULL) ? item->data->name.GetString() : "unknown");
+
+			saveData.load_buffer();
+
+		}
 
 	return true;
 

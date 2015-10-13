@@ -40,6 +40,13 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
+	bool j1Render::SaveData(pugi::xml_node&);
+	
+
+	bool j1Render::LoadData(pugi::xml_node);
+
+
+
 public:
 
 	SDL_Renderer*	renderer;

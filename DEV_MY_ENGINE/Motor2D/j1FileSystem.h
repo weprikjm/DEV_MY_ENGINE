@@ -42,7 +42,10 @@ public:
 
 	unsigned int Save(const char* file, const char* buffer, unsigned int size) const;
 
+
 private:
+
+	pugi::xml_document saveData;
 
 };
 
